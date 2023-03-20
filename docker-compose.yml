@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_DB: repro
+      POSTGRES_USER: repro
+      POSTGRES_PASSWORD: repro
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5555:5432"
+
+  app-0:
+    image: repro:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    depends_on:
+      - postgres
+
+  app-1:
+    image: repro:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    depends_on:
+      - app-0
+
+  app-2:
+    image: repro:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    depends_on:
+      - app-1
+
+volumes:
+  postgres:
